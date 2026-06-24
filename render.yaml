@@ -1,10 +1,9 @@
-services:
+﻿services:
   - type: web
     name: assistente-financeiro-api
-    runtime: java
+    runtime: docker
     plan: free
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/assistentefinanceiro-0.0.1-SNAPSHOT.jar
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: DATABASE_URL
         sync: false
@@ -14,5 +13,3 @@ services:
         sync: false
       - key: FRONTEND_URL
         sync: false
-      - key: JAVA_VERSION
-        value: 21

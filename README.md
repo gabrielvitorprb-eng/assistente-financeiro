@@ -1,4 +1,4 @@
-# Assistente Financeiro
+﻿# Assistente Financeiro
 
 Sistema web para controle de gastos pessoais com API em Java Spring Boot, banco PostgreSQL e frontend em React + Vite. O projeto tambem possui um fluxo de registro de lancamentos por mensagens simuladas de WhatsApp e webhook compativel com Twilio.
 
@@ -210,10 +210,19 @@ jdbc:postgresql://host-do-neon/neondb?sslmode=require
 
 4. Guarde separadamente usuario e senha do banco para configurar no Render.
 
-### 2. Publicar backend Spring Boot no Render
+### 2. Publicar backend Spring Boot no Render com Docker
 
-O projeto possui um `render.yaml` com uma configuracao base para o backend.
-No Render, configure as variaveis:
+O projeto possui um `Dockerfile` na raiz e um `render.yaml` com configuracao base para Docker. No Render, crie um Web Service com:
+
+```text
+Language: Docker
+Root Directory: deixar vazio
+Dockerfile Path: ./Dockerfile
+```
+
+O Render usara o Dockerfile da raiz para compilar o backend com Maven e executar o jar com Java 21 JRE.
+
+Configure as variaveis de ambiente no Render:
 
 ```text
 DATABASE_URL=jdbc:postgresql://host-do-neon/neondb?sslmode=require
@@ -222,14 +231,14 @@ DB_PASSWORD=senha_do_neon
 FRONTEND_URL=https://seu-frontend.vercel.app
 ```
 
-Comandos usados pelo Render:
+O Dockerfile executa:
 
 ```bash
 ./mvnw clean package -DskipTests
-java -jar target/assistentefinanceiro-0.0.1-SNAPSHOT.jar
+java -jar app.jar
 ```
 
-O Render define a variavel `PORT` automaticamente.
+A aplicacao expoe a porta `8080`, e o Spring Boot tambem aceita a variavel `PORT` quando definida pela plataforma.
 
 ### 3. Publicar frontend React/Vite na Vercel
 
@@ -285,3 +294,4 @@ Nao foram criadas migrations complexas neste momento. Como melhoria futura, reco
 - Melhorar interpretacao de linguagem natural.
 - Adicionar relatorios por periodo e exportacao de dados.
 - Criar perfis de ambiente para desenvolvimento, teste e producao.
+
