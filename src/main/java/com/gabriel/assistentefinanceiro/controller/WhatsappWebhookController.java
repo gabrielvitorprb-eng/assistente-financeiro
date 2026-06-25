@@ -18,9 +18,24 @@ public class WhatsappWebhookController {
 
     private final WhatsappService whatsappService;
 
-    @PostMapping("/webhook/whatsapp")
+    @PostMapping(
+            value = "/webhook/whatsapp",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     public WhatsAppMensagemResponse receber(@Valid @RequestBody WhatsAppMensagemRequest request) {
         return whatsappService.processar(request);
+    }
+
+    @PostMapping(
+            value = "/webhook/whatsapp",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+            produces = MediaType.APPLICATION_XML_VALUE
+    )
+    public ResponseEntity<String> receberTwilioNoWebhookPrincipal(
+            @RequestParam("From") String from,
+            @RequestParam("Body") String body
+    ) {
+        return processarTwilio(from, body);
     }
 
     @PostMapping(
@@ -32,6 +47,10 @@ public class WhatsappWebhookController {
             @RequestParam("From") String from,
             @RequestParam("Body") String body
     ) {
+        return processarTwilio(from, body);
+    }
+
+    private ResponseEntity<String> processarTwilio(String from, String body) {
         String telefone = from.replaceFirst("^whatsapp:", "");
         WhatsAppMensagemResponse response = whatsappService.processar(new WhatsAppMensagemRequest(telefone, body));
         String twiml = "<Response><Message>" + escaparXml(response.resposta()) + "</Message></Response>";
